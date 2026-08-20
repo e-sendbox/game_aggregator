@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+sqlalchemy==2.0.52
+requests
+beautifulsoup4
+PyYAML
+pytest

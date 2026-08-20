@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Все игры — Metacritic Research{% endblock %}
+{% block content %}
+<div class="games-page">
+    <div class="sticky-header">
+        <div class="filter-bar">
+            <span class="filter-name">{{ filter_name }}{% if search %} · «{{ search }}»{% endif %}</span>
+        </div>
+        <div class="toolbar">
+            <input type="text" class="search-input" id="search-input" placeholder="Для поиска введи часть названия игры и нажми Enter" value="{{ search or '' }}">
+            <div class="toolbar-divider"></div>
+            <select class="platform-filter" id="platform-filter">
+                <option value="">Все платформы</option>
+                {% for p in all_platforms %}
+                <option value="{{ p }}" {% if p == platform %}selected{% endif %}>{{ p }}</option>
+                {% endfor %}
+            </select>
+            <div class="toolbar-divider"></div>
+            <button class="sort-btn sort-meta {% if sort and sort.startswith('all_metascore') %}active{% endif %}" id="sort-all-metascore" title="Сортировка по All metascore">
+                All metascore <span class="sort-arrow">{{ '↑' if sort == 'all_metascore_asc' else ('↓' if sort == 'all_metascore_desc' else '') }}</span>
+            </button>
+            <button class="sort-btn sort-user {% if sort and sort.startswith('all_userscore') %}active{% endif %}" id="sort-all-userscore" title="Сортировка по All userscore">
+                All userscore <span class="sort-arrow">{{ '↑' if sort == 'all_userscore_asc' else ('↓' if sort == 'all_userscore_desc' else '') }}</span>
+            </button>
+        </div>
+    </div>
+    <div class="games-grid" id="games-grid">
+        {% for card in cards %}
+        <a href="/game/{{ card.id }}" class="game-tile" data-metascore="{{ card.metascore or '' }}" data-userscore="{{ card.userscore or '' }}">
+            <div class="tile-cover">
+                {% if card.cover_url %}
+                <img src="{{ card.cover_url }}" alt="{{ card.title }}" loading="lazy">
+                {% else %}
+                <div class="tile-cover-placeholder">{{ card.title[0] }}</div>
+                {% endif %}
+            </div>
+            <div class="tile-title">{{ card.title }}</div>
+            <div class="tile-platforms">{{ card.platforms | join(', ') }}</div>
+            <div class="tile-release">{{ card.release_date or 'дата релиза неизвестна' }}</div>
+            <div class="tile-scores">
+                <span class="score {{ card.metascore_class }}" title="Метаскор">{{ card.metascore or 'tbd' }}</span>
+                <span class="score {{ card.userscore_class }}" title="Юзерскор">{{ card.userscore or 'tbd' }}</span>
+            </div>
+        </a>
+        {% else %}
+        <div class="empty">Игр не найдено</div>
+        {% endfor %}
+    </div>
+    {% if pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+        <button class="page-btn" data-page="{{ page - 1 }}">←</button>
+        {% endif %}
+        <span class="page-info">стр. {{ page }} из {{ pages }} · всего игр: {{ total }}</span>
+        {% if page < pages %}
+        <button class="page-btn" data-page="{{ page + 1 }}">→</button>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

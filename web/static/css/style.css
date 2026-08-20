@@ -1,0 +1,595 @@
+:root {
+    --bg: #1a1a1a;
+    --bg-light: #2a2a2a;
+    --bg-card: #333;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --accent: #ffc107;
+    --green: #00ce7a;
+    --yellow: #ffc107;
+    --red: #ff4d4d;
+    --border: #444;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.layout { display: flex; min-height: 100vh; }
+
+/* ===== Левая панель ===== */
+.sidebar {
+    width: 56px;
+    background: var(--bg-light);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    flex-shrink: 0;
+    z-index: 20;
+}
+
+.sidebar-top, .sidebar-bottom { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+
+.sidebar-divider { width: 32px; height: 1px; background: var(--border); margin: 4px 0; }
+
+.bell { position: relative; font-size: 22px; cursor: pointer; }
+.bell-research .bell-icon {
+    color: #d4a017;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+.bell-letsplay .bell-icon {
+    color: #9a5fd6;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+.bell-badge {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    background: var(--red);
+    color: #fff;
+    font-size: 10px;
+    border-radius: 8px;
+    padding: 1px 5px;
+    min-width: 16px;
+    text-align: center;
+}
+.bell-panel {
+    display: none;
+    position: absolute;
+    left: 48px;
+    top: 0;
+    width: 320px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: var(--bg-light);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+}
+.bell-panel.open { display: block; }
+.bell-panel-title {
+    padding: 10px 12px;
+    font-weight: bold;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+}
+.bell-panel-list { padding: 4px 0; }
+.bell-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2px 8px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+}
+.bell-row:last-child { border-bottom: none; }
+.bell-row.processed { opacity: 0.6; }
+.bell-link { color: var(--text); text-decoration: none; flex: 1; }
+.bell-link:hover { color: var(--accent); }
+.bell-errors { flex-basis: 100%; color: var(--red); font-size: 12px; }
+.bell-errors:hover { color: var(--red); text-decoration: underline; }
+.bell-mark {
+    cursor: pointer;
+    color: var(--red);
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+.bell-mark:hover { background: var(--bg-card); }
+.bell-mark.done { cursor: default; color: var(--green); }
+.bell-mark.done:hover { background: transparent; }
+
+.nav-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text);
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+.nav-btn:hover { background: var(--bg-card); }
+.nav-btn:disabled { opacity: 1; cursor: not-allowed; outline: 2px solid #888; outline-offset: 2px; }
+.nav-btn:disabled:hover { background: transparent; }
+.run-btn {
+    background: #8a6d1a;
+    color: #e8e8e8;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+.run-btn:hover { background: #7a5f15; }
+.run-btn.running { background: var(--green); }
+.lp-btn {
+    background: #6b4a8f;
+    color: #e8e8e8;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+.lp-btn:hover { background: #5d3f7d; }
+
+/* ===== Контент ===== */
+.content { flex: 1; padding: 16px 24px; overflow-x: clip; }
+
+/* ===== Список игр ===== */
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
+}
+.filter-bar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+}
+.filter-name { color: var(--accent); font-weight: bold; font-size: 14px; }
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+}
+.search-input {
+    width: 50%;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-light);
+    color: var(--text);
+    font-size: 14px;
+}
+.toolbar-divider { width: 1px; height: 28px; background: var(--border); }
+.platform-filter {
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-light);
+    color: var(--text);
+}
+.sort-btn {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-light);
+    color: var(--text);
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.sort-btn:hover { filter: brightness(1.2); }
+.sort-btn.sort-user { background: #4d9fff; color: #1a1a1a; }
+.sort-btn.sort-meta { background: var(--green); color: #1a1a1a; }
+.sort-btn.sort-user.active, .sort-btn.sort-meta.active { outline: 2px solid var(--accent); }
+.sort-arrow { font-weight: bold; }
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+}
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+.page-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-light);
+    color: var(--text);
+    font-size: 14px;
+    cursor: pointer;
+}
+.page-btn:hover { background: var(--bg-card); }
+.page-info { color: var(--text-dim); font-size: 13px; }
+.game-tile {
+    background: var(--bg-card);
+    border-radius: 8px;
+    padding: 12px;
+    text-decoration: none;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: box-shadow 0.2s;
+}
+.game-tile:hover { box-shadow: 0 0 12px rgba(255, 193, 7, 0.3); }
+.tile-cover { aspect-ratio: 2/3; overflow: hidden; border-radius: 4px; background: #222; }
+.tile-cover img { width: 100%; height: 100%; object-fit: cover; }
+.tile-cover-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    color: var(--text-dim);
+    background: #222;
+}
+.tile-cover-placeholder.big { font-size: 80px; }
+.tile-title { font-weight: bold; font-size: 14px; }
+.tile-platforms { color: var(--text-dim); font-size: 12px; }
+.tile-release { color: var(--text-dim); font-size: 12px; text-transform: uppercase; }
+.tile-scores { display: flex; gap: 8px; }
+.empty { color: var(--text-dim); padding: 40px; text-align: center; width: 100%; }
+
+/* ===== Скоры: цвет по ТИПУ (метаскор/юзерскор/платформенный), не по уровню ===== */
+.score {
+    display: inline-block;
+    min-width: 32px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+    font-size: 13px;
+}
+.score.big { font-size: 28px; padding: 8px 16px; }
+.score-meta { background: var(--green); color: #1a1a1a; }
+.score-user { background: #4d9fff; color: #1a1a1a; }
+.score-platform { background: #b06bff; color: #1a1a1a; }
+.score-tbd { background: #555; color: var(--text-dim); }
+
+/* Плашечки скоров с надписями */
+.score-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #1a1a1a;
+}
+.score-badge.score-meta { background: var(--green); }
+.score-badge.score-user { background: #4d9fff; }
+.score-badge.score-platform { background: #b06bff; }
+.score-badge.score-tbd { background: #555; color: var(--text-dim); }
+
+/* ===== Карточка игры ===== */
+.game-title-bar { display: flex; justify-content: flex-end; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.game-title { color: var(--accent); font-size: 24px; }
+.game-developer { color: var(--text-dim); font-size: 16px; font-weight: normal; }
+
+.game-info { display: flex; gap: 24px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+.game-cover { width: 200px; flex-shrink: 0; }
+.game-cover img { width: 100%; border-radius: 8px; }
+.cover-missing { color: var(--text-dim); font-size: 12px; text-align: center; margin-top: 4px; }
+.game-desc { flex: 1; color: var(--text); line-height: 1.5; display: flex; flex-direction: column; }
+.desc-scroll { max-height: 200px; overflow-y: auto; padding-right: 8px; }
+.missing { color: var(--text-dim); font-style: italic; }
+.game-links { display: flex; flex-direction: column; gap: 6px; margin-top: auto; padding-top: 12px; }
+.video-link { color: var(--accent); }
+.related-link { color: var(--accent); }
+
+.score-panel { padding: 16px 0; border-bottom: 1px solid var(--border); }
+.score-row { display: flex; align-items: center; gap: 24px; margin-bottom: 8px; }
+.score-link { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text); }
+.score-label { font-size: 13px; color: var(--text-dim); }
+.youtube-icon { font-size: 24px; color: var(--red); }
+
+.reviews-panel { padding: 16px 0; border-bottom: 1px solid var(--border); overflow-x: auto; }
+.reviews-table { width: 100%; border-collapse: collapse; }
+.reviews-table th, .reviews-table td { border: 1px solid var(--border); padding: 10px; vertical-align: top; }
+.reviews-table th { background: var(--bg-light); }
+.platform-name { display: block; font-weight: bold; margin-bottom: 4px; }
+.platform-metascore { display: block; font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+.reviews-icon-col { width: 90px; text-align: center; font-size: 13px; }
+.reviews-icon-col a { text-decoration: none; color: var(--accent); }
+.summary-cell { font-size: 13px; line-height: 1.4; color: var(--text-dim); }
+.summary-cell ul, .bloggers-body ul { margin: 4px 0 8px 18px; padding: 0; }
+.summary-cell strong, .bloggers-body strong { color: #c8c8c8; }
+
+.bloggers-panel { padding: 16px 0; }
+.placeholder { color: var(--text-dim); }
+.bloggers-header { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-bottom: 12px; }
+.bloggers-title { color: var(--accent); font-weight: bold; }
+.bloggers-meta { color: var(--text-dim); font-size: 13px; }
+.bloggers-body { line-height: 1.5; font-size: 13px; color: var(--text-dim); max-height: 300px; overflow-y: auto; padding-right: 8px; }
+
+/* ===== Попап «Обновить летсплеи» ===== */
+.lp-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+}
+.lp-modal.open { display: flex; }
+.lp-modal-content {
+    width: 80%;
+    max-width: 900px;
+    max-height: 85vh;
+    background: var(--bg-light);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+.lp-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-weight: bold;
+    color: var(--accent);
+}
+.lp-modal-close {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 16px;
+    cursor: pointer;
+}
+.lp-modal-body { padding: 16px; overflow-y: auto; flex: 1; }
+.lp-research-row {
+    display: block;
+    padding: 10px 12px;
+    background: var(--bg-card);
+    border-radius: 6px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 13px;
+}
+.lp-games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 6px;
+}
+.lp-game-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+}
+.lp-game-item:hover { background: var(--bg-card); }
+.lp-modal-footer {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+}
+.lp-run-btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 4px;
+    background: var(--accent);
+    color: #1a1a1a;
+    font-weight: bold;
+    cursor: pointer;
+}
+.lp-run-btn:disabled { opacity: 0.6; cursor: default; }
+
+/* ===== Попап запуска ресерча: radio-переключатель (шаг 9) ===== */
+.run-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-size: 13px;
+}
+.run-option:last-child { margin-bottom: 0; }
+.run-option:hover { border-color: var(--accent); }
+.run-option input[type="radio"] { accent-color: var(--accent); flex-shrink: 0; }
+
+/* ===== Настройки ===== */
+.settings-page {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 32px);
+}
+.config-panel { padding: 8px 0 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.config-panel h2, .logs-panel h2 { color: var(--accent); margin-bottom: 8px; font-size: 15px; font-weight: 600; }
+.config-section { padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-light); }
+.config-section h3 { color: var(--text); margin-bottom: 8px; font-size: 13px; font-weight: 600; }
+.config-llm { margin-bottom: 10px; }
+.config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.config-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.config-row:last-child { margin-bottom: 0; }
+.config-row label { width: 200px; color: var(--text-dim); font-size: 13px; }
+.config-llm .config-row input[type="text"], .config-llm .config-row input[type="password"] {
+    flex: 1;
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+}
+.config-row input[type="range"] { flex: 1; max-width: 260px; }
+.range-hint { color: var(--text-dim); font-size: 12px; min-width: 120px; }
+.config-row button {
+    padding: 6px 16px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-card);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.config-row button:hover { background: #3d3d3d; }
+#check-result { color: var(--text-dim); font-size: 13px; }
+
+/* Бегунки: аккуратные, в стиле Metacritic */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid #1a1a1a;
+    box-shadow: 0 0 0 1px var(--accent);
+}
+input[type="range"]::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid #1a1a1a;
+    box-shadow: 0 0 0 1px var(--accent);
+}
+input[type="range"]::-moz-range-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+}
+
+/* Модальное окно статуса проверок */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+    background: var(--bg-light);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    min-width: 420px;
+    max-width: 90vw;
+}
+.modal-box h3 { color: var(--accent); margin-bottom: 10px; font-size: 14px; font-weight: 600; }
+.check-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; color: var(--text); font-size: 13px; }
+.check-row.ok .check-icon { color: #00ce7a; }
+.check-row.fail .check-icon { color: #ff4d4d; }
+.check-summary {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    font-weight: 600;
+}
+.check-summary.ok { color: #00ce7a; }
+.check-summary.fail { color: #ff4d4d; }
+.modal-box button {
+    margin-top: 10px;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 4px;
+    background: var(--accent);
+    color: #1a1a1a;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.logs-panel { padding: 12px 0 0; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.logs-tabs { display: flex; gap: 8px; margin-bottom: 8px; }
+.log-tab {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-light);
+    color: var(--text);
+    cursor: pointer;
+}
+.log-tab.active { background: var(--accent); color: #1a1a1a; }
+.logs-view {
+    background: #111;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    font-family: monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    color: #7fdb8a;
+    position: relative;
+}
+.logs-view.loading::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 32px;
+    height: 32px;
+    margin: -16px 0 0 -16px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: logs-spin 0.8s linear infinite;
+    z-index: 1;
+}
+@keyframes logs-spin {
+    to { transform: rotate(360deg); }
+}
+.activity-view {
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    white-space: pre-wrap;
+}

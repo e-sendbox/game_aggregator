@@ -1,0 +1,12 @@
+# Данные и логи
+data/
+logs/
+*.db
+
+# Кэши Python/pytest
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Локальный конфиг: может содержать ключ Ollama (вводится через веб-настройки)
+config.yaml

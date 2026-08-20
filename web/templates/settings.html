@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Настройки — Metacritic Research{% endblock %}
+{% block content %}
+<div class="settings-page">
+    <div class="config-panel">
+        <h2>Конфигурация</h2>
+
+        <div class="config-section config-llm">
+            <h3>Настройки LLM</h3>
+            <div class="config-row">
+                <input type="password" id="ollama-key" value="{{ api_key }}"
+                       placeholder="API ключ OLLAMA. По умолчанию используется системный ключ из переменной окружения OLLAMA_API_KEY. Впиши свой, чтобы изменить.">
+            </div>
+            <div class="config-row">
+                <input type="text" id="ollama-model" value="{{ model }}"
+                       placeholder="Название LLM модели. По умолчанию используется deepseek-v4-flash:0731. Впиши свою, чтобы изменить.">
+            </div>
+        </div>
+
+        <div class="config-grid">
+            <div class="config-section">
+                <h3>Ресерч игр на Metacritic</h3>
+                <div class="config-row">
+                    <label for="days-back">Обойти игры за последние <span id="days-back-value">{{ days_back }}</span> дн.</label>
+                    <input type="range" id="days-back" min="1" max="3" step="1" value="{{ days_back }}">
+                    <span class="range-hint" id="days-back-hint"></span>
+                </div>
+                <div class="config-row">
+                    <label for="analyze-limit">Резюмировать последние <span id="analyze-limit-value">{{ analyze_limit }}</span> комментариев</label>
+                    <input type="range" id="analyze-limit" min="20" max="100" step="10" value="{{ analyze_limit }}">
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h3>Ресерч летсплеев на YouTube</h3>
+                <div class="config-row">
+                    <label for="letsplay-months">Искать свежие летсплеи в пределах <span id="letsplay-months-value">{{ letsplay_months }}</span> мес.</label>
+                    <input type="range" id="letsplay-months" min="1" max="12" step="1" value="{{ letsplay_months }}">
+                </div>
+            </div>
+        </div>
+
+        <div class="config-row">
+            <button id="save-key-btn">Сохранить и проверить</button>
+        </div>
+    </div>
+
+    <div class="logs-panel">
+        <h2>Логи</h2>
+        <div class="logs-tabs">
+            <button class="log-tab active" data-tab="activity">activity.log</button>
+            <button class="log-tab" data-tab="access">access.log</button>
+            <button class="log-tab" data-tab="error">error.log</button>
+        </div>
+        <pre class="logs-view activity-view" id="logs-view">Загрузка...</pre>
+    </div>
+</div>
+
+<div class="modal-overlay" id="check-modal">
+    <div class="modal-box">
+        <h3>Результат проверки</h3>
+        <div id="check-modal-list"></div>
+        <button id="check-modal-close">Закрыть</button>
+    </div>
+</div>
+{% endblock %}

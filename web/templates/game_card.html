@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}{{ game.title }} — Metacritic Research{% endblock %}
+{% block content %}
+<div class="game-page">
+    <div class="game-title-bar">
+        <h1 class="game-title">{{ game.title }} <span class="game-developer">[{{ game.developer or 'разработчик неизвестен' }}]</span></h1>
+    </div>
+
+    <div class="game-info">
+        <div class="game-cover">
+            {% if game.cover_url %}
+            <img src="{{ game.cover_url }}" alt="{{ game.title }}">
+            {% else %}
+            <div class="tile-cover-placeholder big">{{ game.title[0] }}</div>
+            <div class="cover-missing">обложка неизвестна</div>
+            {% endif %}
+        </div>
+        <div class="game-desc">
+            {% if game.description %}
+            <div class="desc-scroll">{{ game.description }}</div>
+            {% else %}
+            <p class="missing">описание неизвестно</p>
+            {% endif %}
+            <div class="game-links">
+                {% if param and param.video_url %}
+                <a href="{{ param.video_url }}" target="_blank" class="video-link">Ссылка на видео</a>
+                {% else %}
+                <span class="missing">видео неизвестно</span>
+                {% endif %}
+                {% if related_ids %}
+                <a href="/?ids={{ related_ids | join(',') }}" class="related-link">Похожие игры</a>
+                {% else %}
+                <span class="missing">похожие игры неизвестны</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="score-panel">
+        <div class="score-row">
+            <a class="score-link" href="{{ game.url }}" target="_blank" title="Открыть на Metacritic">
+                <span class="score-label">Metacritic</span>
+                <span class="score-badge {{ metascore_class }}">all metascore: {{ param.all_critic_score if param and param.all_critic_score else 'tbd' }}</span>
+                <span class="score-badge {{ userscore_class }}">all userscore: {{ param.all_user_score if param and param.all_user_score else 'tbd' }}</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="reviews-panel">
+        <table class="reviews-table">
+            <thead>
+                <tr>
+                    <th class="reviews-icon-col">Отзывы</th>
+                    {% for row in platform_rows %}
+                    <th>
+                        <span class="platform-name">{{ row.name }}</span>
+                        <span class="score-badge {{ row.metascore_class }}">metascore: {{ row.metascore or 'tbd' }}</span>
+                    </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="reviews-icon-col">
+                        <a href="https://www.metacritic.com/game/{{ game.slug }}/user-reviews/" target="_blank" title="Отзывы игроков">👤 игроки</a>
+                    </td>
+                    {% for row in platform_rows %}
+                    <td class="summary-cell md-render">{{ row.user_summary or '—' }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td class="reviews-icon-col">
+                        <a href="https://www.metacritic.com/game/{{ game.slug }}/critic-reviews/" target="_blank" title="Отзывы критиков">🎯 критики</a>
+                    </td>
+                    {% for row in platform_rows %}
+                    <td class="summary-cell md-render">{{ row.critic_summary or '—' }}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="bloggers-panel">
+        {% if letsplay %}
+        <div class="bloggers-header">
+            <a href="{{ letsplay.video_url }}" target="_blank" class="bloggers-title">{{ letsplay.title }}</a>
+            <span class="bloggers-meta">канал: {{ letsplay.channel }}</span>
+            <span class="bloggers-meta">просмотры: {{ letsplay.views if letsplay.views is not none else 'неизвестно' }}</span>
+            <span class="bloggers-meta">дата публикации: {{ letsplay.upload_date.strftime('%Y-%m-%d') if letsplay.upload_date else 'неизвестна' }}</span>
+        </div>
+        <div class="bloggers-body md-render">
+            {% if letsplay.summary %}
+            {{ letsplay.summary }}
+            {% elif letsplay.status == 'success' %}
+            <span class="missing">летсплей в процессе обработки</span>
+            {% else %}
+            <span class="missing">летсплей не удалось обработать ({{ letsplay.status }})</span>
+            {% endif %}
+        </div>
+        {% else %}
+        <span class="placeholder">летсплей неизвестен</span>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

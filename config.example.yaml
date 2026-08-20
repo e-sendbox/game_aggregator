@@ -1,0 +1,54 @@
+# Конфигурация Metacritic Research
+# Скопируй в config.yaml (config.yaml игнорируется git — в нём может храниться ключ Ollama).
+
+research:
+  list_url: https://www.metacritic.com/browse/game/all/all/all-time/new/  # листинг новых игр
+  max_pages: 10   # страховка от бесконечного цикла
+  days_back: 1    # окно выборки: 1 = сегодня, 2 = вчера+сегодня, 3 = позавчера+вчера+сегодня
+
+db:
+  url: sqlite:///data/metacritic.db
+
+http:
+  timeout: 30
+  pause_between_requests: 1.5   # пауза между запросами к Metacritic (сек)
+  retries: 3
+  user_agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/126.0 Safari/537.36
+
+comments:
+  limit: 20   # сколько комментов брать с платформы
+
+analyze:
+  limit: 20       # сколько комментов на группу (игра × тип) для LLM-анализа
+  workers: 10     # максимум одновременных потоков анализа
+  prompt: analyze_batch.txt
+
+letsplay:
+  search_limit: 5          # сколько результатов брать из поиска YouTube
+  max_age_days: 360        # «свежий» ролик: не старше N дней
+  summary_min_len: 200     # минимальная длина резюме LLM
+  timeout: 120             # таймаут yt-dlp (сек)
+  pause_between_requests: 5  # пауза между играми при обходе летсплеев (сек)
+
+llm:
+  base_url: https://ollama.com
+  model: ''                    # пусто → используется default_model
+  default_model: deepseek-v4-flash:0731
+  timeout: 120
+  prompts_dir: prompts
+  api_key: ''                  # ключ Ollama; пусто → OLLAMA_API_KEY из env
+
+web:
+  host: 0.0.0.0
+  port: 8000
+
+logging:
+  dir: logs
+  access_file: access.log
+  error_file: error.log
+  activity_file: activity.log
+
+schedule:
+  enabled: true
+  cron: 0 * * * *   # запуск ресерча игр каждый час (минута час день месяц день-недели)
