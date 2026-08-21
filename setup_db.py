@@ -18,6 +18,9 @@ def main() -> None:
         config = yaml.safe_load(fh)
     url = config["db"]["url"]
     db = Database(url)
+    # создать директорию БД, если её нет (свежий клон без data/)
+    if url.startswith("sqlite:///"):
+        Path(url.removeprefix("sqlite:///")).parent.mkdir(parents=True, exist_ok=True)
     db.init_schema()
     path = url.removeprefix("sqlite:///")
     print(f"База данных создана: {Path(path).resolve()}")
